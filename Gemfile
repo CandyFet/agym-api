@@ -11,6 +11,7 @@ gem 'rails', '~> 6.0.2', '>= 6.0.2.2'
 gem 'factory_bot_rails'
 gem 'puma', '~> 4.1'
 gem 'rspec-rails'
+gem 'faker', '2.1.2'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 # gem 'jbuilder', '~> 2.7'
 # Use Redis adapter to run Action Cable in production
@@ -43,7 +44,6 @@ end
 group :production do
   gem 'pg', '1.1.4'
 end
-
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
