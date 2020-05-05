@@ -1,4 +1,6 @@
 class PostsController < ApplicationController
+  skip_before_action :authorize!, only: %i[index show]
+  
   def index
     posts = Post.recent.
       page(params[:page]).
