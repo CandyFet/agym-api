@@ -7,7 +7,7 @@ class RegistrationsController < ApplicationController
     render json: user, status: :created
   rescue ActiveRecord::RecordInvalid
     render json: user, adapter: :json_api,
-      serializer: ActiveModel::Serializer::ErrorSerializer,
+      serializer: ErrorSerializer,
       status: :unprocessable_entity
   end
 
