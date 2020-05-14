@@ -18,7 +18,8 @@ describe PostsController do
                                                        'title' => post.title,
                                                        'text' => post.text,
                                                        'slug' => post.slug,
-                                                       'preview-text' => post.preview_text
+                                                       'preview-text' => post.preview_text,
+                                                       'likes-count' => post.likes.count
                                                      })
       end
     end
@@ -56,7 +57,8 @@ describe PostsController do
                                               'title' => post.title,
                                               'text' => post.text,
                                               'slug' => post.slug,
-                                              'preview-text' => post.preview_text
+                                              'preview-text' => post.preview_text,
+                                              'likes-count' => post.likes.count
                                             })
     end
   end
@@ -262,7 +264,7 @@ describe PostsController do
 
     subject { delete :destroy, params: { id: post.id } }
 
-    context 'when no code provided' do
+    context "when no code provided" do
       it_behaves_like 'forbidden_requests'
     end
 

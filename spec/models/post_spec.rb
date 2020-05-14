@@ -17,18 +17,6 @@ RSpec.describe Post, type: :model do
       expect(post).not_to be_valid
       expect(post.errors.messages[:text]).to include("can't be blank")
     end
-
-    # it 'should validate the presence of the slug' do
-    #   post = build :post, slug: ''
-    #   expect(post).not_to be_valid
-    #   expect(post.errors.messages[:slug]).to include("can't be blank")
-    # end
-
-    # it 'should validate the presence of the preview text' do
-    #   post = build :post, preview_text: ''
-    #   expect(post).not_to be_valid
-    #   expect(post.errors.messages[:preview_text]).to include("can't be blank")
-    # end
   end
 
   describe '.recent' do
