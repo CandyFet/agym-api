@@ -12,19 +12,47 @@ RSpec.describe CommentsController, type: :controller do
   end
 
   let(:example_post) { create :post }
-  let(:comment) { example_post.comments.create!(text: 'test', user: user) }
+  let(:example_comment) { example_post.comments.create!(text: 'test', user: user) }
   let(:user) { create :user }
   let(:access_token) { user.create_access_token }
 
   describe 'GET /index' do
+    subject { get :index, params: { post_id: example_post.id } }
     it 'returns a successful response' do
-      get :index, params: { post_id: example_post.id }
+      subject
       expect(response).to have_http_status(:ok)
+    end
+
+    it 'should return proper json' do
+      create_list :comment, 10, post: example_post
+      subject
+      Comment.recent.each_with_index do |comment, index|
+        expect(json_data[index]['attributes']).to eq({
+                                                       'text' => comment.text,
+                                                       'likes-count' => comment.likes.count
+                                                     })
+      end
+    end
+
+    it 'should return posts in proper order' do
+      old_comment = create :comment, post: example_post
+      newer_comment = create :comment, post: example_post
+      subject
+      expect(json_data.first['id']).to eq(newer_comment.id.to_s)
+      expect(json_data.last['id']).to eq(old_comment.id.to_s)
+    end
+
+    it 'should paginate results' do
+      create_list :comment, 10, post: example_post
+      get :index, params: { post_id: example_post.id, page: 2, per_page: 1 }
+      expect(json_data.length).to eq 1
+      expected_comment = Comment.recent.second.id.to_s
+      expect(json_data.first['id']).to eq(expected_comment)
     end
   end
 
   describe "GET /show" do
-    subject { get :show, params: { post_id: example_post.id, id: comment.id } }
+    subject { get :show, params: { post_id: example_post.id, id: example_comment.id } }
 
     it "renders a successful response" do
       subject        
@@ -34,10 +62,9 @@ RSpec.describe CommentsController, type: :controller do
     it 'should return proper json' do
       subject
       expect(json_data['attributes']).to include({
-                                              'text' => comment.text,
+                                              'text' => example_comment.text,
+                                              'likes-count' => example_comment.likes.count
                                             })
-      expect(comment.user).to eq(user)
-      expect(comment.post).to eq(example_post)
     end
 
   end
@@ -85,7 +112,7 @@ RSpec.describe CommentsController, type: :controller do
   end
 
   describe '#update' do
-    subject { patch :update, params: { id: comment.id, comment: valid_attributes, post_id: example_post.id } }
+    subject { patch :update, params: { id: example_comment.id, comment: valid_attributes, post_id: example_post.id } }
 
     context 'when no code provided' do
       it_behaves_like 'forbidden_requests'
@@ -112,7 +139,7 @@ RSpec.describe CommentsController, type: :controller do
 
 
         subject do
-          patch :update, params: { id: comment.id, comment: invalid_attributes, post_id: example_post.id} 
+          patch :update, params: { id: example_comment.id, comment: invalid_attributes, post_id: example_post.id} 
         end
 
         it 'should return 422 status code' do
@@ -144,7 +171,7 @@ RSpec.describe CommentsController, type: :controller do
         end
 
         subject do
-          patch :update, params: { id: comment.id, comment: { text: 'Awesome comment' }, post_id: example_post.id }
+          patch :update, params: { id: example_comment.id, comment: { text: 'Awesome comment' }, post_id: example_post.id }
         end
 
         it 'should have 200 status code' do
@@ -161,7 +188,7 @@ RSpec.describe CommentsController, type: :controller do
 
         it 'should update the comment' do
           subject
-          expect(comment.reload.text).to eq(
+          expect(example_comment.reload.text).to eq(
             update_attributes['data']['attributes']['text']
           )
         end
@@ -171,7 +198,7 @@ RSpec.describe CommentsController, type: :controller do
 
   describe '#destroy' do
 
-    subject { delete :destroy, params: { id: comment.id, post_id: example_post.id, user_id: user.id } }
+    subject { delete :destroy, params: { id: example_comment.id, post_id: example_post.id, user_id: user.id } }
 
     context 'when no code provided' do
       it_behaves_like 'forbidden_requests'
@@ -207,7 +234,7 @@ RSpec.describe CommentsController, type: :controller do
         end
 
         it 'should destroy the comment' do
-          comment
+          example_comment
           expect { subject }.to change{ user.comments.count }.by(-1)
         end
       end

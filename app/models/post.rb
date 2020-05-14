@@ -11,6 +11,8 @@ class Post < ApplicationRecord
   belongs_to :user
   
   has_many :comments, dependent: :destroy
+  has_many :likes, as: :likeble, dependent: :destroy
+  has_many :reposts, as: :repostable, dependent: :destroy
 
   scope :recent, -> { order(created_at: :desc) }
 
