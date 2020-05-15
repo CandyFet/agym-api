@@ -14,13 +14,23 @@ describe PostsController do
       create_list :post, 10
       subject
       Post.recent.each_with_index do |post, index|
-        expect(json_data[index]['attributes']).to eq({
-                                                       'title' => post.title,
-                                                       'text' => post.text,
-                                                       'slug' => post.slug,
-                                                       'preview-text' => post.preview_text,
-                                                       'likes-count' => post.likes.count
-                                                     })
+        expect(json_data[index]['attributes']['header']).to eq({
+                                                                 'title' => post.title,
+                                                                 'user-name' => post.user.name,
+                                                                 'slug' => post.slug,
+                                                                 'user-avatar-url' => post.user.avatar_url
+                                                               })
+
+        expect(json_data[index]['attributes']['body']).to eq({
+                                                               'text' => post.text,
+                                                               'preview-text' => post.preview_text
+                                                             })
+
+        expect(json_data[index]['attributes']['actions']).to eq({
+                                                                  'likes-total' => post.likes.count,
+                                                                  'reposts-total' => post.reposts.count,
+                                                                  'comments-total' => post.comments.count
+                                                                })
       end
     end
 
@@ -53,13 +63,23 @@ describe PostsController do
     it 'should return proper json' do
       subject
       post.reload
-      expect(json_data['attributes']).to eq({
-                                              'title' => post.title,
-                                              'text' => post.text,
-                                              'slug' => post.slug,
-                                              'preview-text' => post.preview_text,
-                                              'likes-count' => post.likes.count
-                                            })
+      expect(json_data['attributes']['header']).to eq({
+                                                        'title' => post.title,
+                                                        'user-name' => post.user.name,
+                                                        'slug' => post.slug,
+                                                        'user-avatar-url' => post.user.avatar_url
+                                                      })
+
+      expect(json_data['attributes']['body']).to eq({
+                                                      'text' => post.text,
+                                                      'preview-text' => post.preview_text
+                                                    })
+
+      expect(json_data['attributes']['actions']).to eq({
+                                                         'likes-total' => post.likes.count,
+                                                         'reposts-total' => post.reposts.count,
+                                                         'comments-total' => post.comments.count
+                                                       })
     end
   end
 
@@ -84,8 +104,12 @@ describe PostsController do
           {
             data: {
               attributes: {
-                title: '',
-                text: ''
+                header: {
+                  title: ''
+                },
+                body: {
+                  text: ''
+                }
               }
             }
           }
@@ -110,7 +134,6 @@ describe PostsController do
               'source' => { 'pointer' => '/data/attributes/text' },
               'detail' => "can't be blank"
             }
-
           )
         end
       end
@@ -123,9 +146,21 @@ describe PostsController do
           {
             'data' => {
               'attributes' => {
-                'title' => 'Awesome post',
-                'text' => 'Super text',
-                'slug' => 'awesome-post'
+                'header' => {
+                  'title' => 'some title',
+                  'slug' => 'some-title',
+                  'user-avatar-url' => nil,
+                  'user-name' => nil
+                },
+                'body' => {
+                  'text' => 'some text',
+                  'preview-text' => 'some text'
+                },
+                'actions' => {
+                  'comments-total' => 0,
+                  'likes-total' => 0,
+                  'reposts-total' => 0
+                }
               }
             }
           }
@@ -185,8 +220,12 @@ describe PostsController do
           {
             data: {
               attributes: {
-                title: '',
-                text: ''
+                header: {
+                  title: ''
+                },
+                body: {
+                  text: ''
+                }
               }
             }
           }
@@ -222,10 +261,22 @@ describe PostsController do
         let(:valid_attributes) do
           {
             'data' => {
-              'attributes' => {
-                'title' => 'Awesome post',
-                'text' => 'Super content',
-                'slug' => post.reload.slug
+              'attributes' =>  {
+                'header' =>  {
+                  'title' => post.title,
+                  'user-name' => post.user.name,
+                  'slug' => post.title.parameterize,
+                  'user-avatar-url' => post.user.avatar_url
+                },
+                'body' =>  {
+                  'text' => post.text,
+                  'preview-text' => post.preview_text
+                },
+                'actions' => {
+                  'likes-total' => post.likes.count,
+                  'reposts-total' => post.reposts.count,
+                  'comments-total' => post.comments.count
+                }
               }
             }
           }
@@ -250,7 +301,7 @@ describe PostsController do
         it 'should update the post' do
           subject
           expect(post.reload.title).to eq(
-            valid_attributes['data']['attributes']['title']
+            valid_attributes['data']['attributes']['header']['title']
           )
         end
       end
@@ -264,7 +315,7 @@ describe PostsController do
 
     subject { delete :destroy, params: { id: post.id } }
 
-    context "when no code provided" do
+    context 'when no code provided' do
       it_behaves_like 'forbidden_requests'
     end
 
@@ -289,7 +340,6 @@ describe PostsController do
       end
 
       context 'when success request sent' do
-
         it 'should have 204 status code' do
           subject
           expect(response).to have_http_status(:no_content)
@@ -302,7 +352,7 @@ describe PostsController do
 
         it 'should destroy the post' do
           post
-          expect { subject }.to change{ user.posts.count }.by(-1)
+          expect { subject }.to change { user.posts.count }.by(-1)
         end
       end
     end

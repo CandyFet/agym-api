@@ -47,8 +47,10 @@ class PostsController < ApplicationController
   private
 
   def post_params
-    params.require(:data).require(:attributes).
-      permit(:title, :text) || 
+    params.require(:data).require(:attributes).require(:header).
+      permit(:title).
+      merge(params.require(:data).require(:attributes).require(:body).
+      permit(:text)) || 
     ActionController::Parameters.new
   end
 end
