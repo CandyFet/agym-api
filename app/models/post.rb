@@ -2,7 +2,6 @@ class Post < ApplicationRecord
   validates :title, presence: true
   validates :text, presence: true
 
-
   after_initialize -> do
     self.create_slug
     self.create_preview_text
@@ -15,6 +14,8 @@ class Post < ApplicationRecord
   has_many :reposts, as: :repostable, dependent: :destroy
 
   scope :recent, -> { order(created_at: :desc) }
+
+  paginates_per 10
 
   def create_slug
     self.slug ||= self.title.parameterize if self.title.present?
