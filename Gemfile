@@ -13,6 +13,7 @@ gem 'faker', '2.1.2'
 gem 'kaminari'
 gem 'octokit', '~> 4.0'
 gem 'puma', '~> 4.1'
+gem 'rack-cors'
 gem 'rails', '~> 6.0.2', '>= 6.0.2.2'
 gem 'rspec-rails'
 

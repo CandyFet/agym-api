@@ -1,14 +1,16 @@
-class Post < ApplicationRecord
+# frozen_string_literal: true
+
+class Article < ApplicationRecord
   validates :title, presence: true
   validates :text, presence: true
 
-  after_save -> do
-    self.create_slug
-    self.create_preview_text
-  end
+  after_save lambda {
+    create_slug
+    create_preview_text
+  }
 
   belongs_to :user
-  
+
   include Commentable
   include Likeble
   include Repostable
@@ -18,10 +20,10 @@ class Post < ApplicationRecord
   paginates_per 10
 
   def create_slug
-    self.slug ||= self.title.parameterize if self.title.present?
+    self.slug ||= title.parameterize if title.present?
   end
 
   def create_preview_text
-    self.preview_text = self.text[0..50] if self.text.present?
+    self.preview_text = text[0..50] if text.present?
   end
 end

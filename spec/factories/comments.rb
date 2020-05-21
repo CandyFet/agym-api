@@ -1,7 +1,18 @@
 FactoryBot.define do
   factory :comment do
-    sequence(:text) { |n| "My text #{n}" }
-    association :post
-    association :user
+    for_post
+
+    trait :for_post do
+      association :commentable, factory: :post
+      association :user
+      sequence(:text) { |n| "My text #{n}" }
+    end
+
+    trait :for_article do
+      association :commentable, factory: :article
+      association :user
+      sequence(:text) { |n| "My text #{n}" }
+    end
+
   end
 end

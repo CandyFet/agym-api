@@ -12,7 +12,7 @@ RSpec.describe Comment, type: :model do
       expect(comment.errors.messages).to include(
         {
           user: ['must exist'],
-          post: ['must exist'],
+          commentable: ['must exist'],
           text: ["can't be blank"]
         }
       )

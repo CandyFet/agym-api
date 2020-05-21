@@ -9,14 +9,16 @@ end
 25.times do |n|
     Post.create(title: "Post title #{n}",
                 text: Faker::Lorem.paragraph_by_chars(number: 256, supplemental: false),
-                user: User.find_by(id: "#{n}"))
+                user: User.find_by(id: "#{Random.new.rand(1...User.count)}"))
 end
 
 Post.count.times do |post_index|
-    10.times do |comment_index| 
-        Comment.create(
-            post: Post.find_by(id: "#{post_index + 1}"),
-            user: User.find_by(id: "#{Random.new.rand(1...User.count)}"),
+    10.times do
+        post = Post.find_by(id: "#{post_index + 1}")
+        user = User.find_by(id: "#{Random.new.rand(1...User.count)}")
+        comment = Comment.create(
+            commentable: post,
+            user: user,
             text: Faker::Lorem.paragraph_by_chars(number: 100, supplemental: false),
         )
     end

@@ -1,13 +1,16 @@
 class LikesController < ApplicationController
-skip_before_action :authorize!, only: :index
+  include Behaveable::ResourceFinder
+  include Behaveable::RouteExtractor
+  skip_before_action :authorize!, only: :index
+  before_action :set_likeble
 
   def index
-    @likes = set_likeble.likes
+    @likes = set_likeble
     render json: @likes
   end
 
   def create
-    like = current_user.likes.build(like_params)
+    like = current_user.likes.build(likeble: @behaveable)
     like.save!
     render json: like, status: :created
   rescue
@@ -26,19 +29,8 @@ skip_before_action :authorize!, only: :index
 
   private
 
-  def like_params
-    params.require(:like).permit(:likeble_id, :likeble_type)
-  end
-
-  def set_post
-    @post = Post.find(params[:post_id])
-  end
-
-  def set_comment
-    @comment = Comment.find(params[:comment_id]) if params[:comment_id].present?
-  end
-
   def set_likeble
-    set_comment.present? ? set_comment : set_post
+    @behaveable ||= behaveable
+    @behaveable ? @behaveable.likes : Like
   end
 end

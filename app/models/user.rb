@@ -12,6 +12,7 @@ class User < ApplicationRecord
   has_many :comments, dependent: :destroy
   has_many :likes, dependent: :destroy
   has_many :reposts, dependent: :destroy
+  has_many :articles, dependent: :destroy
 
   def password
     if encrypted_password.present?

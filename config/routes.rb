@@ -11,7 +11,11 @@ Rails.application.routes.draw do
     resources :reposts, only: %i[create destroy]
   end
 
-  resources :posts, concerns: %i[likeble repostable] do
+  concern :commentable do
     resources :comments, concerns: :likeble
   end
+
+  resources :posts, concerns: %i[commentable likeble repostable]
+
+  resources :articles, concerns: %i[commentable likeble repostable]
 end

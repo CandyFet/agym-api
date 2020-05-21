@@ -1,6 +1,11 @@
 class RepostsController < ApplicationController
+  include Behaveable::ResourceFinder
+  include Behaveable::RouteExtractor
+
+  before_action :set_repostable
+
   def create
-    repost = current_user.reposts.build(repost_params)
+    repost = current_user.reposts.build(repostable: @behaveable)
     repost.save!
     render json: repost, status: :created
   rescue
@@ -19,7 +24,8 @@ class RepostsController < ApplicationController
 
   private
 
-  def repost_params
-    params.require(:repost).permit(:repostable_id, :repostable_type)
+  def set_repostable
+    @behaveable ||= behaveable
+    @behaveable ? @behaveable.reposts : Repost
   end
 end
