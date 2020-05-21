@@ -1,8 +1,9 @@
 class Comment < ApplicationRecord
-  belongs_to :post
   belongs_to :user
+  belongs_to :commentable, polymorphic: true
 
-  has_many :likes, as: :likeble, dependent: :destroy
+
+  include Likeble
 
   validates :text, presence: true
 

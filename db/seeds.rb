@@ -17,7 +17,7 @@ Post.count.times do |post_index|
         post = Post.find_by(id: "#{post_index + 1}")
         user = User.find_by(id: "#{Random.new.rand(1...User.count)}")
         comment = Comment.create(
-            post: post,
+            commentable: post,
             user: user,
             text: Faker::Lorem.paragraph_by_chars(number: 100, supplemental: false),
         )

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_14_085552) do
+ActiveRecord::Schema.define(version: 2020_05_21_073047) do
 
   create_table "access_tokens", force: :cascade do |t|
     t.string "token", null: false
@@ -20,13 +20,25 @@ ActiveRecord::Schema.define(version: 2020_05_14_085552) do
     t.index ["user_id"], name: "index_access_tokens_on_user_id"
   end
 
-  create_table "comments", force: :cascade do |t|
+  create_table "articles", force: :cascade do |t|
+    t.string "title"
+    t.string "slug"
     t.text "text"
-    t.integer "post_id"
+    t.text "preview_text"
     t.integer "user_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["post_id"], name: "index_comments_on_post_id"
+    t.index ["user_id"], name: "index_articles_on_user_id"
+  end
+
+  create_table "comments", force: :cascade do |t|
+    t.text "text"
+    t.integer "user_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "commentable_type"
+    t.integer "commentable_id"
+    t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable_type_and_commentable_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
@@ -77,7 +89,7 @@ ActiveRecord::Schema.define(version: 2020_05_14_085552) do
   end
 
   add_foreign_key "access_tokens", "users"
-  add_foreign_key "comments", "posts"
+  add_foreign_key "articles", "users"
   add_foreign_key "comments", "users"
   add_foreign_key "likes", "users"
   add_foreign_key "posts", "users"
