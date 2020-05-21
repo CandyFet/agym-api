@@ -25,7 +25,7 @@ Post.count.times do |post_index|
 end
 
 25.times do |n|
-    article = Article.create(title: "Post title #{n}",
+    article = Article.create(title: "Article title #{n}",
                 text: Faker::Lorem.paragraph_by_chars(number: 256, supplemental: false),
                 user: User.find_by(id: "#{Random.new.rand(1...User.count)}"))
     like = Like.create(user: article.user, likeble: article)
