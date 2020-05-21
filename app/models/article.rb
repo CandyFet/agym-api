@@ -4,7 +4,7 @@ class Article < ApplicationRecord
   validates :title, presence: true
   validates :text, presence: true
 
-  after_save lambda {
+  after_initialize lambda {
     create_slug
     create_preview_text
   }
