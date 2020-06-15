@@ -14,6 +14,8 @@ class User < ApplicationRecord
   has_many :reposts, dependent: :destroy
   has_many :articles, dependent: :destroy
 
+  paginates_per 10
+
   def password
     if encrypted_password.present?
       @password ||= Password.new(encrypted_password)

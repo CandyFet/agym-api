@@ -8,6 +8,7 @@ ruby '2.7.1'
 gem 'active_model_serializers'
 gem 'bcrypt'
 gem 'bootsnap', '>= 1.4.2', require: false
+gem 'cancancan'
 gem 'factory_bot_rails'
 gem 'faker', '2.1.2'
 gem 'kaminari'

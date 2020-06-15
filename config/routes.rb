@@ -18,4 +18,6 @@ Rails.application.routes.draw do
   resources :posts, concerns: %i[commentable likeble repostable]
 
   resources :articles, concerns: %i[commentable likeble repostable]
+
+  resources :users
 end
