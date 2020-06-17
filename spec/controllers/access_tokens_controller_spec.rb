@@ -51,7 +51,7 @@ RSpec.describe AccessTokensController, type: :controller do
 
       it 'should return proper json body' do
         subject
-        expect(json_data['attributes']).to eq(
+        expect(json_data['attributes']).to include(
           { 'token' => user.access_token.token }
         )
       end
@@ -99,7 +99,7 @@ RSpec.describe AccessTokensController, type: :controller do
       it 'should return proper json body' do
         expect { subject }.to change { User.count }.by(1)
         user = User.find_by(login: 'jsmith1')
-        expect(json_data['attributes']).to eq(
+        expect(json_data['attributes']).to include(
           { 'token' => user.access_token.token }
         )
       end

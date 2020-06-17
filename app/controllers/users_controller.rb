@@ -14,15 +14,36 @@ class UsersController < ApplicationController
   end
 
   def update
-    User.find(params[:id]) == current_user ?
-                              (render json: current_user, status: :ok) :
-                              authorization_error
-  rescue
-    render json: User.find(params[:id]), adapter: :json_api,
-    serializer: ErrorSerializer,
-    status: :unprocessable_entity
-
+    user = User.find(params[:id])
+    user.update!(user_params)
+    render json: user, status: :ok
+  rescue ActionController::ParameterMissing
+    authorization_error
+  rescue StandardError => e
+    render json: user, adapter: :json_api,
+           serializer: ErrorSerializer,
+           status: :unprocessable_entity
   end
 
-  def destroy; end
+  def destroy
+    user = User.find(params[:id])
+    user.destroy
+    head :no_content
+  rescue => e
+    byebug
+    authorization_error
+  end
+
+  private
+
+  def user_params
+    params.require(:data).require(:attributes).require(:header)
+          .permit(:name,
+                  :login,
+                  :admin,
+                  :ambassador,
+                  :trainer,
+                  :password) ||
+      ActionController::Parameters.new
+  end
 end

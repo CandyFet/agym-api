@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class ApplicationController < ActionController::API
+  include ActionController::Helpers
   class AuthorizationError < StandardError; end
 
   rescue_from UserAuthenticator::Oauth::AuthenticationError, with: :authentication_oauth_error
